@@ -61,7 +61,6 @@ class NB:
                 self.data['calculations'][labels[j]]['variance'][i] += np.power((data[j][i] - self.data['calculations'][labels[j]]['mean'][i]),2)
 
             for label in self.data['calculations']:
-
                 self.data['calculations'][label]['variance'][i] /= self.data['calculations'][label]['count'] - 1
 
 
