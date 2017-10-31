@@ -1,37 +1,53 @@
-import numpy as np
 import random
+import numpy as np
 
-X = np.array([[6,180,12],[5.92,190,11],[5.58,170,12],[5.92,165,10],[5,100,6],[5.5,150,8],[5.42,130,7],[5.75,150,9]])
-Y = np.array([0,0,0,0,1,1,1,1])
+def sigmoid(sum):
+    return 1 / (1 + np.exp(-sum))
 
-def predict(row, pair):
-    sum = 0
+class LogReg:
+    def __init__(self, iterations=1000, learning_rate=1e5):
+        self.iterations = iterations
+        self.learning_rate = learning_rate
 
-    for i in range(0,len(row)):
-        sum += ((row[i] * pair[0][i]) - pair[1])
-    return 1.0 if sum > 0 else 0.0
+    def predict(self, data):
+        if len(data) == 0:
+            raise ValueError('Expecting 2D array')
+
+        if len(data[0]) != self.features_size:
+            raise ValueError('Invalid feature size')
+
+        predictions = []
+
+        for example in data:
+            probablity = sigmoid(np.dot(example, self.weights) - self.t)
+
+            if probablity > 0.5:
+                predictions.append(1)
+            else:
+                predictions.append(0)
+
+        return predictions
+
+    def train(self, data, labels):
+        self.t = 10
+        self.weights = np.zeros(len(data[0]))
+
+        examples_size = len(data)
+        if examples_size == 0:
+            raise ValueError("the data provided is empty")
+
+        features_size = len(data[0])
+        self.examples_size = examples_size
+        self.features_size = features_size
 
 
-def test():
-    t = random.randint(1, 50)
+        for iteration in range(self.iterations):
+            for i in range(0, len(data)):
+                example = data[i]
+                label = labels[i]
+                probability = sigmoid(np.dot(example, self.weights) - self.t)
+                for j in range(0, len(example)):
+                    self.weights[j] = self.weights[j] - self.learning_rate * (probability - label) * example[j]
+                self.t = self.t + self.learning_rate * (probability - label)
 
-    w = np.zeros(len(X[0]))
-    a = 0.1
-    while True:
-        temp = np.copy(w)
-        for i in range(0,len(X)):
-            example = X[i]
-            label = Y[i]
-            prediction = predict(example, (w,t))
-            for j in range(0,len(example)):
-                w[j] = w[j] - a * (prediction - label) * example[j]
-            t = t + a * (prediction - label)
 
-        if np.array_equal(temp, w):
-            break
-
-    return (w,t)
-
-pair = test()
-result = 'M' if predict([6,180,10], pair) == 0 else 'F'
-print(result)

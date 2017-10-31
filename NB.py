@@ -5,7 +5,7 @@ Y = np.array(['M','M','M','M','F','F','F','F'])
 
 class NB:
 
-    def train(self, data, labels):
+    def fit(self, data, labels):
         self.data = {}
 
         examples_size = len(data)
@@ -108,11 +108,14 @@ class NB:
 
         return predictions
 
-nb = NB()
-nb.train(X,Y)
+    def score(self, data, labels):
+        correct = 0
+        predictions = self.predict(data)
 
-e = [[6,150,9]]
+        for i in range(len(predictions)):
+            if predictions[i] == labels[i]:
+                correct += 1
 
-print(nb.predict(e))
+        return correct / len(predictions)
 
 
